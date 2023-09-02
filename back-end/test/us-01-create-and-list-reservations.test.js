@@ -11,7 +11,7 @@ describe("US-01 - Create and list reservations", () => {
       .then(() => knex.migrate.latest());
   });
 
-  beforeEach(() => {
+  beforeAll(() => {
     return knex.seed.run();
   });
 
