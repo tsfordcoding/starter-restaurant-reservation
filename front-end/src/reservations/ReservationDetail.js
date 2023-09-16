@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 function ReservationDetail({ reservation }) {
     const [currentReservation, setCurrentReservation] = useState(reservation);
 
+    useEffect(() => {
+      setCurrentReservation(reservation);
+    }, [reservation]);
+
     return (
       <>
         <tr key={currentReservation.reservation_id}>
-          <th scope="row"> {reservation.reservation_id} </th>
+          <th scope="row"> {currentReservation.reservation_id} </th>
           <td> {currentReservation.first_name} </td>
           <td> {currentReservation.last_name} </td>
           <td> {currentReservation.mobile_number} </td>
