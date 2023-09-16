@@ -88,8 +88,8 @@ function futureReservations(req, res, next) {
   const { reservation_date, reservation_time } = req.body.data;
   const now = Date.now();
   const futureReservation = new Date(
-    `${reservation_date} ${reservation_time}.valueOf()`
-  );
+    `${reservation_date} ${reservation_time}`
+  ).valueOf();
 
   if(futureReservation > now) {
     return next();
@@ -112,6 +112,20 @@ function hasValidReservationTime(req, res, next) {
       status: 400,
       message: "reservation_time",
   });
+}
+
+function reservationDuringOpenHours(req, res, next) {
+  const time = req.body.data.reservation_time;
+  const open = "10:30";
+  const close = "21:30";
+
+  if(time >= open && time <= close) {
+    return next();
+  }
+  next({
+    status: 400,
+    message: `Reservation must be during open hours`,
+  })
 }
 
 function hasValidPeople(req, res, next) {
@@ -161,6 +175,7 @@ module.exports = {
     closedOnTuesday,
     futureReservations,
     hasValidReservationTime,
+    reservationDuringOpenHours,
     hasValidPeople,
     asyncErrorBoundary(create),
   ],
