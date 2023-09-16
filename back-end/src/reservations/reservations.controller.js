@@ -71,6 +71,35 @@ function hasValidReservationDate(req, res, next) {
   });
 }
 
+function closedOnTuesday(req, res, next) {
+  const date = req.body.data.reservation_date;
+  const weekDay = new Date(date).getUTCDay();
+
+  if(weekDay !== 2) {
+    return next();
+  }
+  next({
+    status: 400,
+    message: `closed`,
+  });
+}
+
+function futureReservations(req, res, next) {
+  const { reservation_date, reservation_time } = req.body.data;
+  const now = Date.now();
+  const futureReservation = new Date(
+    `${reservation_date} ${reservation_time}.valueOf()`
+  );
+
+  if(futureReservation > now) {
+    return next();
+  }
+  next({
+    status: 400,
+    message: `future`,
+  })
+}
+
 function hasValidReservationTime(req, res, next) {
   const { reservation_time } = req.body.data;
 
@@ -129,6 +158,8 @@ module.exports = {
     hasLastName,
     hasMobilePhone,
     hasValidReservationDate,
+    closedOnTuesday,
+    futureReservations,
     hasValidReservationTime,
     hasValidPeople,
     asyncErrorBoundary(create),

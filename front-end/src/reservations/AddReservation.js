@@ -89,7 +89,7 @@ function AddReservation() {
 
         <div className="form-group">
           <label className="mr-2" htmlFor="reservation_date">
-            Date of Reservation:
+            Date of Reservation (Closed on Tuesdays):
           </label>
           <input
             type="date"
