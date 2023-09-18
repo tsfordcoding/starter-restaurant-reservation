@@ -29,7 +29,8 @@ function AddReservation() {
     event.preventDefault();
     createReservation({ 
         ...reservation,
-        people: parseInt(reservation.people) 
+        people: parseInt(reservation.people),
+        status: "booked" 
       })
       .then(() => {
         history.push(`/dashboard?date=${reservation.reservation_date}`);

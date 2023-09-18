@@ -1,18 +1,22 @@
 [
     {
         "table_name": "Bar #1",
+        "status": "open",
         "capacity": 1
     },
     {
         "table_name": "Bar #2",
+        "status": "open",
         "capacity": 1
     },
     {
         "table_name": "#1",
+        "status": "open",
         "capacity": 6
     },
     {
         "table_name": "#2",
+        "status": "open",
         "capacity": 6
     }
 ]

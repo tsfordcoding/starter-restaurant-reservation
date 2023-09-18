@@ -177,10 +177,21 @@ function read(req, res) {
 }
 
 async function list(req, res) {
-  const { date } = req.query;
-
-  const data = await reservationsService.list(date);
-  res.json({ data });
+  const { date, currentDate, mobile_number } = req.query;
+  
+  if(date) {
+    const data = await reservationsService.listByDate(date);
+    res.json({ data });
+  } else if(currentDate) {
+    const data = await reservationsService.listByDate(currentDate);
+    res.json({ data });
+  } else if(mobile_number) {
+    const data = await reservationsService.listByPhone(mobile_number);
+    res.json({ data });
+  } else {
+    const data = await reservationsService.list();
+    res.json({ data });
+  }
 }
 
 module.exports = {

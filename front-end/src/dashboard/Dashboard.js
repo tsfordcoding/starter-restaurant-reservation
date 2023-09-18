@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { listReservations } from "../utils/api";
+import { listReservations, listTables } from "../utils/api";
 import { previous, next } from "../utils/date-time";
 import ErrorAlert from "../layout/ErrorAlert";
-import { useLocation, useHistory, useRouteMatch } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 import ReservationDetail from "../reservations/ReservationDetail";
-
+import TableDetail from "../tables/TableDetail";
 /**
  * Defines the dashboard page.
  * @param date
@@ -15,54 +15,60 @@ function Dashboard({ date }) {
   const [reservations, setReservations] = useState([]);
   const [currentDate, setCurrentDate] = useState(date);
   const [reservationsError, setReservationsError] = useState(null);
+  const [tables, setTables] = useState([]);
+  const [tablesError, setTablesError] = useState(null);
 
-  const url = useRouteMatch();
   const history = useHistory();
   const location = useLocation();
   const searchedDate = location.search.slice(-10);
 
-  function loadDashboard() {
+  useEffect(() => {
     const abortController = new AbortController();
     setReservationsError(null);
-
-    if(currentDate === date) {
+    if (currentDate === date) {
       listReservations({ date }, abortController.signal)
         .then(setReservations)
         .catch(setReservationsError);
     } else {
       listReservations({ currentDate }, abortController.signal)
         .then(setReservations)
-        .then(setReservationsError);
+        .catch(setReservationsError);
     }
 
-    if(searchedDate && searchedDate !== '') {
+    if (searchedDate && searchedDate !== "") {
       setCurrentDate(searchedDate);
     }
 
     return () => abortController.abort();
-  }
+  }, [date, currentDate, location.search, searchedDate]);
 
-  useEffect(loadDashboard, [date, currentDate, location.search, searchedDate, url]);
+  useEffect(() => {
+    const abortController = new AbortController();
+    setTablesError(null);
+    listTables().then(setTables).catch(setTablesError);
+
+    return () => abortController.abort();
+  }, [history]);
 
   const previousHandler = (event) => {
     event.preventDefault();
-    history.push('/dashboard');
+    history.push("/dashboard");
     setCurrentDate(previous(currentDate));
-  }
+  };
 
   const todayHandler = (event) => {
     event.preventDefault();
-    history.push('/dashboard');
+    history.push("/dashboard");
     setCurrentDate(date);
-  }
+  };
 
   const nextHandler = (event) => {
     event.preventDefault();
-    history.push('/dashboard');
+    history.push("/dashboard");
     setCurrentDate(next(currentDate));
-  }
+  };
 
-  if(reservations) {
+  if (reservations) {
     return (
       <main>
         <div className="mb-3">
@@ -88,10 +94,7 @@ function Dashboard({ date }) {
             </div>
 
             <div className="">
-              <button
-                className="btn btn-primary ml-3"
-                onClick={nextHandler}
-              >
+              <button className="btn btn-primary ml-3" onClick={nextHandler}>
                 Next Day
               </button>
             </div>
@@ -109,16 +112,49 @@ function Dashboard({ date }) {
                 <th scope="col">Phone Number</th>
                 <th scope="col">Reservation Date</th>
                 <th scope="col">Reservation Time</th>
+                <th scope="col">Party Size</th>
+                <th scope="col">Reservation Status</th>
+                <th scope="col">Seat Reservation</th>
+                <th scope="col">Edit Reservation</th>
               </tr>
             </thead>
             <tbody>
-              {reservations && reservations.map((reservation) => (
-                <ReservationDetail reservation={reservation} />
-              ))}
+              {reservations &&
+                reservations.map((reservation) => (
+                  <ReservationDetail
+                    reservation={reservation}
+                    key={reservation.reservation_id}
+                  />
+                ))}
             </tbody>
           </table>
         </div>
-        {/*JSON.stringify(reservations)*/}
+
+        <ErrorAlert error={tablesError} />
+        <div>
+          <h4>Tables List</h4>
+          <table className="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Table Name</th>
+                <th scope="col">Capacity</th>
+                <th scope="col">Reservation ID</th>
+                <th scope="col">Table Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tables &&
+                tables.map((table) => (
+                  <TableDetail
+                    table={table}
+                    reservations={reservations}
+                    key={table.table_id}
+                  />
+                ))}
+            </tbody>
+          </table>
+        </div>
       </main>
     );
   } else {
