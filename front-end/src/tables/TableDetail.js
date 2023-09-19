@@ -3,14 +3,14 @@ import React, { useEffect, useState } from "react";
 function TableDetail({ table, reservations }) {
   const [currentTable, setCurrentTable] = useState(table);
   const [currentReservation, setCurrentReservation] = useState({});
-  const [tableStatus, setTableStatus] = useState("Open");
+  const [tableStatus, setTableStatus] = useState("open");
 
   console.log(currentReservation);
   
   useEffect(() => {
     if (currentTable.reservation_id) {
       setCurrentTable(table);
-      setTableStatus(`Occupied`);
+      setTableStatus(`occupied`);
       setCurrentReservation(
         reservations.find(
           (reservation) =>
@@ -18,7 +18,7 @@ function TableDetail({ table, reservations }) {
         )
       );
     } else {
-        setTableStatus("Open");
+        setTableStatus("open");
     }
   }, [table, reservations, currentTable.reservation_id]);
 
@@ -33,7 +33,7 @@ function TableDetail({ table, reservations }) {
           {tableStatus}
         </td>
         <td data-table-id-finish={table.table_id}>
-            {tableStatus.includes('Occupied') ?
+            {tableStatus.includes('occupied') ?
             <button className="btn btn-danger">Clear Table</button>
             :
             <button className="btn btn-secondary">Test Conditional</button>

@@ -1,6 +1,8 @@
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 const tablesService = require("./tables.service");
 
+// ---- Middleware Functions
+
 function hasData(req, res, next) {
   if (req.body.data) {
     return next();
@@ -58,7 +60,7 @@ async function tableExists(req, res, next) {
     }
     next({
         status: 400,
-        message: `Table does not exist`,
+        message: `table_id does not exist`,
     });
 }
 
@@ -75,6 +77,46 @@ async function reservationExists(req, res, next) {
         message: `999`,
     })
 }
+
+async function seatedReservation(req, res, next) {
+    const { reservation_id } = req.body.data;
+    const seated = await tablesService.readTableByReservation(reservation_id);
+
+    if(!seated) {
+        return next();
+    }
+    next({
+        status: 400,
+        message: `seated`,
+    })
+}
+
+async function openTable(req, res, next) {
+    const table = res.locals.table;
+
+    if(!table.reservation_id) {
+        return next();
+    }
+    next({
+        status: 400,
+        message: `occupied`,
+    });
+}
+
+async function tableHasEnoughSeats(req, res, next) {
+    const table = res.locals.table;
+    const reservation = res.locals.reservation;
+
+    if(reservation.people > table.capacity) {
+        next({
+            status: 400,
+            message: `capacity`,
+        });
+    }
+    return next();
+}
+
+// ---- CRUD Functions
 
 function read(req, res) {
     const data = res.locals.table;
@@ -124,7 +166,11 @@ module.exports = {
     update: [
         hasData,
         hasReservationId,
-        tableExists,
+        asyncErrorBoundary(tableExists),
+        asyncErrorBoundary(reservationExists),
+        asyncErrorBoundary(openTable),
+        asyncErrorBoundary(tableHasEnoughSeats),
+        asyncErrorBoundary(seatedReservation),
         asyncErrorBoundary(update),
     ],
 }
