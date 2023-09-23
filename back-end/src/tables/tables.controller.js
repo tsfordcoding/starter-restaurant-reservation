@@ -1,7 +1,7 @@
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 const tablesService = require("./tables.service");
 
-// ---- Middleware Functions
+// ---- Middleware Validation Functions
 
 function hasData(req, res, next) {
   if (req.body.data) {
@@ -59,7 +59,7 @@ async function tableExists(req, res, next) {
         return next();
     }
     next({
-        status: 400,
+        status: 404,
         message: `table_id does not exist`,
     });
 }
@@ -92,9 +92,10 @@ async function seatedReservation(req, res, next) {
 }
 
 function openTable(req, res, next) {
-    const table = res.locals.table;
+    const { reservation_id } = res.locals.table;
+    console.log("R ID: ", reservation_id)
 
-    if(!table.reservation_id) {
+    if(!reservation_id || reservation_id === null) {
         return next();
     }
     next({
@@ -135,21 +136,12 @@ async function create(req, res) {
 }
 
 async function update(req, res) {
-    const { reservation_id } = req.body.data;
-    const { table_name, capacity } = res.locals.table;
-    const { table_id } = req.params;
-
-    const tableUpdate = {
-        table_id,
-        table_name,
-        capacity,
-        status: "occupied",
-        reservation_id
-    };
-
-    const reservationUpdate = { ...res.locals.reservation, status: "seated" };
-    const updatedTable = await tablesService.update(tableUpdate, reservationUpdate);
-    res.json( { data: updatedTable });
+    const { reservation, table } = res.locals;
+    const data = await tablesService.update(
+      reservation.reservation_id,
+      table.table_id
+    );
+    res.json({ data });
 }
 
 
