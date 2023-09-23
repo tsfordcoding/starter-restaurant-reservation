@@ -53,12 +53,12 @@ async function fetchJson(url, options, onCancel) {
 }
 
 export async function createReservation(reservation, signal) {
-  const url = `${API_BASE_URL}/reservations`;
+  const url = `${API_BASE_URL}/reservations/new`;
   const options = {
     method: "POST",
     headers,
     body: JSON.stringify({ data: reservation }),
-    signal
+    signal,
   };
   return await fetchJson(url, options);
 }
@@ -70,7 +70,7 @@ export async function createTable(table, signal) {
     headers,
     body: JSON.stringify({ data: table }),
     signal,
-  }
+  };
   return await fetchJson(url, options);
 }
 
@@ -100,8 +100,50 @@ export async function updateSeat(table_id, reservation_id, signal) {
   const options = {
     method: "PUT",
     headers,
-    body: JSON.stringify({ data: { reservation_id }}),
+    body: JSON.stringify({ data: { reservation_id } }),
     signal,
   };
   return await fetchJson(url, options);
+}
+
+export async function deleteReservation(table_id, signal) {
+  const url = `${API_BASE_URL}/tables/${table_id}/seat`;
+  const options = {
+    method: "DELETE",
+    headers,
+    body: JSON.stringify({ data: { table_id } }),
+    signal,
+  };
+  return await fetchJson(url, options);
+}
+
+export async function updateReservationStatus(data, reservation_id, signal) {
+  const url = `${API_BASE_URL}/reservations/${reservation_id}/status`;
+  const options = {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ data }),
+    signal,
+  };
+  return await fetchJson(url, options);
+}
+
+export async function getReservation(reservation_id, signal) {
+  const url = `${API_BASE_URL}/reservations/${reservation_id}`;
+  return await fetchJson(url, { headers, signal }, [])
+    .then(formatReservationDate)
+    .then(formatReservationTime);
+}
+
+export async function updateReservation(reservation, signal) {
+  const url = `${API_BASE_URL}/reservations/${reservation.reservation_id}`;
+  const options = {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ data: reservation }),
+    signal,
+  };
+  return await fetchJson(url, options)
+    .then(formatReservationDate)
+    .then(formatReservationTime);
 }

@@ -14,41 +14,65 @@ import TableDetail from "../tables/TableDetail";
 function Dashboard({ date }) {
   const [reservations, setReservations] = useState([]);
   const [currentDate, setCurrentDate] = useState(date);
-  const [reservationsError, setReservationsError] = useState(null);
+
   const [tables, setTables] = useState([]);
-  const [tablesError, setTablesError] = useState(null);
+  const [error, setError] = useState(null);
 
   const history = useHistory();
   const location = useLocation();
   const searchedDate = location.search.slice(-10);
 
+  function tableClear(tables) {
+    let clear = [];
+    tables.forEach((table) => {
+      if(table.reservation_id) {
+        clear.push(table);
+      }
+    })
+    return clear;
+  }
+  let tableClearToggler = tableClear(tables);
+
   useEffect(() => {
     const abortController = new AbortController();
-    setReservationsError(null);
-    if (currentDate === date) {
-      listReservations({ date }, abortController.signal)
-        .then(setReservations)
-        .catch(setReservationsError);
-    } else {
-      listReservations({ currentDate }, abortController.signal)
-        .then(setReservations)
-        .catch(setReservationsError);
-    }
 
-    if (searchedDate && searchedDate !== "") {
+    async function loadReservations() {
+      try {
+        if(currentDate === date) {
+          const reservationsReturned = await listReservations({ date }, abortController.signal);
+          setReservations(reservationsReturned);
+        } else {
+          const reservationsReturned = await listReservations({ currentDate }, abortController.signal);
+          setReservations(reservationsReturned);
+        }
+      } catch(error) {
+        setError(error);
+      }
+    }
+    loadReservations();
+    return () => abortController.abort();
+  }, [date, currentDate, history.location]);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    
+    async function loadTables() {
+      try {
+        const tablesReturned = await listTables();
+        setTables(tablesReturned);
+      } catch(error) {
+        setError(error);
+      }
+    }
+    loadTables();
+    return () => abortController.abort();
+  }, [history, date, currentDate]);
+
+  useEffect(() => {
+    if(searchedDate && searchedDate !== '') {
       setCurrentDate(searchedDate);
     }
-
-    return () => abortController.abort();
-  }, [date, currentDate, location.search, searchedDate]);
-
-  useEffect(() => {
-    const abortController = new AbortController();
-    setTablesError(null);
-    listTables().then(setTables).catch(setTablesError);
-
-    return () => abortController.abort();
-  }, [history]);
+  }, [searchedDate, history])
 
   const previousHandler = (event) => {
     event.preventDefault();
@@ -100,7 +124,7 @@ function Dashboard({ date }) {
             </div>
           </div>
         </div>
-        <ErrorAlert error={reservationsError} />
+        <ErrorAlert error={error} />
         <div>
           <h4>Reservation List</h4>
           <table className="table table-striped">
@@ -116,13 +140,13 @@ function Dashboard({ date }) {
                 <th scope="col">Reservation Status</th>
                 <th scope="col">Seat Reservation</th>
                 <th scope="col">Edit Reservation</th>
+                <th scope="col">Cancel Reservation</th>
               </tr>
             </thead>
             <tbody>
-              {reservations &&
-                reservations.map((reservation) => (
+              {reservations.map((reservation) => (
                   <ReservationDetail
-                    reservation={reservation}
+                    res={reservation}
                     key={reservation.reservation_id}
                   />
                 ))}
@@ -130,7 +154,6 @@ function Dashboard({ date }) {
           </table>
         </div>
 
-        <ErrorAlert error={tablesError} />
         <div>
           <h4>Tables List</h4>
           <table className="table table-striped">
@@ -141,14 +164,16 @@ function Dashboard({ date }) {
                 <th scope="col">Capacity</th>
                 <th scope="col">Reservation ID</th>
                 <th scope="col">Table Status</th>
+                {tableClearToggler.length ?
+                  <th scope="col">Clear Tables</th>
+                  :
+                  <></>}
               </tr>
             </thead>
             <tbody>
-              {tables &&
-                tables.map((table) => (
+              {tables.map((table) => (
                   <TableDetail
                     table={table}
-                    reservations={reservations}
                     key={table.table_id}
                   />
                 ))}

@@ -22,7 +22,7 @@ function readTable(table_id) {
     return knex("tables")
         .select("*")
         .where({ table_id })
-        .then((result) => result[0]);
+        .first();
 }
 
 function readReservation(reservation_id) {

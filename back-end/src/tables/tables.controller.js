@@ -91,7 +91,7 @@ async function seatedReservation(req, res, next) {
     })
 }
 
-async function openTable(req, res, next) {
+function openTable(req, res, next) {
     const table = res.locals.table;
 
     if(!table.reservation_id) {
@@ -168,7 +168,7 @@ module.exports = {
         hasReservationId,
         asyncErrorBoundary(tableExists),
         asyncErrorBoundary(reservationExists),
-        asyncErrorBoundary(openTable),
+        openTable,
         asyncErrorBoundary(tableHasEnoughSeats),
         asyncErrorBoundary(seatedReservation),
         asyncErrorBoundary(update),
