@@ -79,7 +79,7 @@ function validDate(req, res, next) {
 
 function validMobileNumber(req, res, next) {
   const { mobile_number } = req.body.data;
-  const isPhoneNumber = mobile_number.match(/^[1-9]\d{2}-\d{3}-\d{4}$/);
+  const isPhoneNumber = mobile_number.match(/^[1-9]\d{2}-?\d{3}-?\d{4}$/);
 
   if(isPhoneNumber) {
     return next();
@@ -254,7 +254,7 @@ async function list(req, res) {
   if(date) {
     data = await reservationsService.listByDate(date);
   } else if(mobile_number) {
-    data = await reservationsService.listByMobileNumber(mobile_number);
+    data = await reservationsService.listByPhone(mobile_number);
   } else {
     data = await reservationsService.list();
   }
