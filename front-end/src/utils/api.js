@@ -52,28 +52,6 @@ async function fetchJson(url, options, onCancel) {
   }
 }
 
-export async function createReservation(reservation, signal) {
-  const url = `${API_BASE_URL}/reservations/new`;
-  const options = {
-    method: "POST",
-    headers,
-    body: JSON.stringify({ data: reservation }),
-    signal,
-  };
-  return await fetchJson(url, options);
-}
-
-export async function createTable(table, signal) {
-  const url = `${API_BASE_URL}/tables`;
-  const options = {
-    method: "POST",
-    headers,
-    body: JSON.stringify({ data: table }),
-    signal,
-  };
-  return await fetchJson(url, options);
-}
-
 /**
  * Retrieves all existing reservation.
  * @returns {Promise<[reservation]>}
@@ -90,6 +68,36 @@ export async function listReservations(params, signal) {
     .then(formatReservationTime);
 }
 
+export async function readReservation(reservation_id, signal) {
+  const url = new URL(`${API_BASE_URL}/reservations/${reservation_id}`);
+  return await fetchJson(url, { headers, signal }, []);
+}
+
+export async function createReservation(reservation, signal) {
+  const url = `${API_BASE_URL}/reservations`;
+  reservations.people = Number(reservation.people);
+  const options = {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ data: reservation }),
+    signal,
+  };
+  let data = await fetchJson(url, options);
+  return data;
+}
+
+export async function createTable(table, signal) {
+  const url = `${API_BASE_URL}/tables`;
+  const options = {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ data: table }),
+    signal,
+  };
+  let data = await fetchJson(url, options);
+  return data;
+}
+
 export async function listTables(signal) {
   const url = new URL(`${API_BASE_URL}/tables`);
   return await fetchJson(url, { headers, signal }, []);
@@ -103,11 +111,12 @@ export async function updateSeat(table_id, reservation_id, signal) {
     body: JSON.stringify({ data: { reservation_id } }),
     signal,
   };
-  return await fetchJson(url, options);
+  const data = await fetchJson(url, options);
+  return data;
 }
 
 export async function deleteReservation(table_id, signal) {
-  const url = `${API_BASE_URL}/tables/${table_id}/seat`;
+  const url = new URL(`${API_BASE_URL}/tables/${table_id}/seat`);
   const options = {
     method: "DELETE",
     headers,
@@ -117,33 +126,33 @@ export async function deleteReservation(table_id, signal) {
   return await fetchJson(url, options);
 }
 
-export async function updateReservationStatus(data, reservation_id, signal) {
-  const url = `${API_BASE_URL}/reservations/${reservation_id}/status`;
+export async function updateReservationStatus(reservation_id, status, signal) {
+  const url = new URL(`${API_BASE_URL}/reservations/${reservation_id}/status`);
   const options = {
     method: "PUT",
     headers,
-    body: JSON.stringify({ data }),
+    body: JSON.stringify({ data: { status } }),
     signal,
   };
   return await fetchJson(url, options);
 }
 
-export async function getReservation(reservation_id, signal) {
-  const url = `${API_BASE_URL}/reservations/${reservation_id}`;
-  return await fetchJson(url, { headers, signal }, [])
+export async function searchByMobileNumber(mobile_number, signal) {
+  const url = `${API_BASE_URL}/reservations/?mobile_number=${mobile_number}`;
+  return await fetchJson(url, { signal })
     .then(formatReservationDate)
     .then(formatReservationTime);
 }
 
-export async function updateReservation(reservation, signal) {
-  const url = `${API_BASE_URL}/reservations/${reservation.reservation_id}`;
+export async function updateReservation(reservation_id, updatedReservation, signal) {
+  const url = `${API_BASE_URL}/reservations/${reservation_id}/edit`;
+  updatedReservation.people = Number(updatedReservation.people);
   const options = {
     method: "PUT",
     headers,
-    body: JSON.stringify({ data: reservation }),
+    body: JSON.stringify({ data: updatedReservation }),
     signal,
   };
-  return await fetchJson(url, options)
-    .then(formatReservationDate)
-    .then(formatReservationTime);
+  const data = await fetchJson(url, options);
+  return data;
 }
