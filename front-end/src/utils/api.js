@@ -75,7 +75,7 @@ export async function readReservation(reservation_id, signal) {
 
 export async function createReservation(reservation, signal) {
   const url = `${API_BASE_URL}/reservations`;
-  reservations.people = Number(reservation.people);
+  reservation.people = Number(reservation.people);
   const options = {
     method: "POST",
     headers,
@@ -115,7 +115,7 @@ export async function updateSeat(table_id, reservation_id, signal) {
   return data;
 }
 
-export async function deleteReservation(table_id, signal) {
+export async function finishTable(table_id, signal) {
   const url = new URL(`${API_BASE_URL}/tables/${table_id}/seat`);
   const options = {
     method: "DELETE",
