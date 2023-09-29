@@ -1,8 +1,7 @@
 exports.up = function(knex) {
     return knex.schema.createTable("tables", (table) => {
         table.increments("table_id").primary();
-        table.string("table_name");
-        table.string("status");
+        table.string("table_name").notNullable();
         table.integer("capacity").notNullable();
         table.integer("reservation_id").unsigned();
         table
@@ -10,6 +9,7 @@ exports.up = function(knex) {
             .references("reservation_id")
             .inTable("reservations")
             .onDelete("cascade");
+        table.timestamps(true, true);
     })
 };
 

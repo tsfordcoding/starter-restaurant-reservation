@@ -6,8 +6,8 @@ exports.up = function (knex) {
     table.string("mobile_number");
     table.date("reservation_date");
     table.time("reservation_time");
-    table.integer("people").unsigned().notNullable();
-    table.string("status");
+    table.integer("people").unsigned();
+    table.string("status").notNullable().defaultTo("booked");
     table.timestamps(true, true);
   });
 };
