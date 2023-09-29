@@ -54,9 +54,9 @@ function AddTable() {
         <ErrorAlert error={error} />
         <TableForm
           formData={formData}
-          changeNameHandler={handleNameChange}
-          changeCapacityHandler={handleCapacityChange}
-          submitHandler={handleSubmit}
+          handleNameChange={handleNameChange}
+          handleCapacityChange={handleCapacityChange}
+          handleSubmit={handleSubmit}
         />
       </div>
     </div>
