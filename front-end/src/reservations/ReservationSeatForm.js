@@ -6,7 +6,7 @@ function ReservationSeatForm({ tables, handleSubmit, handleChange }) {
 
   return (
     <div>
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Select Table:</label>
           <select name="table_id" onChange={handleChange}>
@@ -27,7 +27,6 @@ function ReservationSeatForm({ tables, handleSubmit, handleChange }) {
           <button
             className="btn btn-primary"
             type="submit"
-            onClick={(event) => handleSubmit(event)}
           >
             Submit
           </button>

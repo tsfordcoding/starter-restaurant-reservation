@@ -6,7 +6,7 @@ function ReservationForm({ formData, handleChange, handleSubmit }) {
 
   return (
     <div>
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label className="mr-2" htmlFor="first_name">
             First Name:
@@ -104,14 +104,13 @@ function ReservationForm({ formData, handleChange, handleSubmit }) {
         <button
           type="submit"
           className="btn btn-primary mr-1 mb-3"
-          onClick={(event) => handleSubmit(event)}
         >
           Submit
         </button>
 
         <button
           className="btn btn-secondary mr-1 mb-3"
-          onClick={() => history.goBack()}
+          onClick={() => history.push("/")}
         >
           Cancel
         </button>

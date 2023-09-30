@@ -12,7 +12,7 @@ function TableForm({
 
   return (
       <div>
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-label mr-2" htmlFor="table_name">
               Table Name:
@@ -46,7 +46,6 @@ function TableForm({
           <button 
             type="submit" 
             className="btn btn-primary mr-1 mb-3"
-            onClick={(event) => handleSubmit(event)}
           >
             Submit
           </button>
