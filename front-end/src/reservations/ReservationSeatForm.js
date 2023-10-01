@@ -24,15 +24,12 @@ function ReservationSeatForm({ tables, handleSubmit, handleChange }) {
         </div>
 
         <div>
-          <button
-            className="btn btn-primary"
-            type="submit"
-          >
+          <button className="btn btn-primary mr-1 mb-3" type="submit">
             Submit
           </button>
 
           <button
-            className="btn btn-secondary"
+            className="btn btn-secondary mr-1 mb-3"
             type="button"
             onClick={() => history.goBack()}
           >
