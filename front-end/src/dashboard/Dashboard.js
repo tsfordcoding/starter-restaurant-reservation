@@ -88,7 +88,7 @@ function Dashboard() {
     <main>
       <h1>Dashboard</h1>
       <div className="d-md-flex mb-3">
-        <h4 className="mb-0">Reservation for date</h4>
+        <h4 className="mb-0">Reservation for date: {date}</h4>
       </div>
       <div className="contrainer">
         <Link
