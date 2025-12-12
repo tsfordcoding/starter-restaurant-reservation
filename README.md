@@ -2,7 +2,7 @@
 
 ## Frontend Deployment:
 
-https://restaurant-reservation-system-xv37.onrender.com/dashboard
+https://restaurant-reservation-system-xv37.onrender.com/
 
 ## Backend Deployment: 
 
